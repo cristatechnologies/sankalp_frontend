@@ -41,6 +41,7 @@ export default function StorePageThemeTwo({ homepageData }) {
   const [homepage] = useState(homepageData);
   const { enable_multivendor } = settings();
   const [isMultivendor, setIsMultivendor] = useState(false);
+  console.log("homepage data is",homepage)
   useEffect(() => {
     if (!isMultivendor) {
       setIsMultivendor(enable_multivendor && parseInt(enable_multivendor));
@@ -143,9 +144,7 @@ export default function StorePageThemeTwo({ homepageData }) {
             </div>
             <ProductGrid
               categories={
-                homepage.popularCategoryProducts.length > 0
-                  ? homepage.popularCategoryProducts
-                  : []
+                homepage.bestProducts.length > 0 ? homepage.bestProducts : []
               }
             />
           </>

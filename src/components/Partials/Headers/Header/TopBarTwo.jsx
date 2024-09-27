@@ -96,6 +96,8 @@ export default function TopBarTwo({ className, contact, settings }) {
     setSearchKey("");
   };
 
+
+
   return (
     <div className={`w-full   h-18 hidden lg:block  ${className || ""}`}>
       <header className="flex !justify-evenly items-center h-12 py-4 text-xl ">

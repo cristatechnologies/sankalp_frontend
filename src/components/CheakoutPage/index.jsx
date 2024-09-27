@@ -160,8 +160,23 @@ function CheakoutPage() {
     setExpireDate({
       value: e.target.value,
       formated: DateFormat(e.target.value, false),
-    });
+    })
   };
+
+
+
+  const uberQuote = (address) =>
+  {
+    axios
+      .post(
+        `${
+          process.env.NEXT_PUBLIC_BASE_URL
+        }api/user/create-quote/${address}?token=${auth().access_token}`
+      )
+      .then((res) => {
+        console.log("response from the uber quotes is ", res);
+      });;
+  }
 
   const getAllAddress = () => {
     axios
@@ -272,6 +287,7 @@ function CheakoutPage() {
             res.data.addresses[0].id
         );
         setBilling(
+          
           res.data &&
             res.data.addresses &&
             res.data.addresses.length > 0 &&
@@ -634,7 +650,7 @@ function CheakoutPage() {
       shippingRules &&
       shippingRules.length > 0
     ) {
-      checkDeliveredAddress(addresses[0].zip_code);
+      // checkDeliveredAddress(addresses[0].zip_code);
       shippingHandler(
         parseInt(addresses[0].id),
         parseInt(addresses[0].city_id)
@@ -994,28 +1010,36 @@ function CheakoutPage() {
     }
   };
 
-  const checkDeliveredAddress = async (pincode) => {
-    if (pincode) {
-      await axios({
-        method: "get",
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}api/user/delhivery-pincode?filter_codes=${pincode}`,
-      })
-        .then((res) => {
-          if (res.data.delivery_codes.length === 0) {
-            setCheckDeliverable({ cod: false, pre_paid: false });
-          } else {
-            const { cod, pre_paid } = res.data.delivery_codes[0].postal_code;
-            setCheckDeliverable({
-              cod: cod !== "N",
-              pre_paid: pre_paid !== "N",
-            });
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-  };
+  // const checkDeliveredAddress = async (pincode) => {
+  //   if (pincode) {
+  //     await axios({
+  //       method: "get",
+  //       url: `${process.env.NEXT_PUBLIC_BASE_URL}api/user/delhivery-pincode?filter_codes=${pincode}`,
+  //     })
+  //       .then((res) => {
+  //         if (res.data.delivery_codes.length === 0) {
+  //           setCheckDeliverable({ cod: false, pre_paid: false });
+  //         } else {
+  //           const { cod, pre_paid } = res.data.delivery_codes[0].postal_code;
+  //           setCheckDeliverable({
+  //             cod: cod !== "N",
+  //             pre_paid: pre_paid !== "N",
+  //           });
+  //         }
+  //       })
+  //       .catch((err) => {
+  //         console.error(err);
+  //       });
+  //   }
+  // };
+
+
+   useEffect(() => {
+     if (addresses && addresses.length > 0) {
+       const defaultAddressId = addresses[0]?.id; // Or use the preferred logic for selecting an address
+       uberQuote(defaultAddressId);
+     }
+   }, [addresses]); 
 
   return (
     <>
@@ -1085,6 +1109,8 @@ function CheakoutPage() {
                               </span>
                             </button>
                           </div>
+
+                          {/*selecting shipping address component  */}
                           {activeAddress === "shipping" ? (
                             <div
                               data-aos="zoom-in"
@@ -1096,7 +1122,8 @@ function CheakoutPage() {
                                   <div
                                     onClick={() => {
                                       setBilling(address.id);
-                                      checkDeliveredAddress(address.zip_code);
+                                      uberQuote(address.id);
+                                    // checkDeliveredAddress(address.zip_code);
                                     }}
                                     key={i}
                                     className={`w-full p-5 border cursor-pointer relative ${
@@ -1673,7 +1700,7 @@ function CheakoutPage() {
                                   <InputCom
                                     label={"Zip Code"}
                                     placeholder="123123"
-                                    type={"number"}
+                                    type={"string "}
                                     inputClasses="w-full h-[50px] py-3"
                                     labelClasses={
                                       "text-[var(--text-color)] text-[13px]"
@@ -1683,7 +1710,7 @@ function CheakoutPage() {
                                     patternValidation={"[1-6]{1}[0-6]{6}"}
                                     inputHandler={(e) => {
                                       setPincode(e.target.value);
-                                      checkDeliveredAddress(e.target.value);
+                                      // checkDeliveredAddress(e.target.value);
                                     }}
                                     error={errors?.pincode}
                                   />
@@ -1789,17 +1816,17 @@ function CheakoutPage() {
                                 onClick={saveAddress}
                                 type="button"
                                 className="w-full h-[50px]"
-                                disabled={
-                                  !checkDeliverable.cod &&
-                                  !checkDeliverable.pre_paid
-                                }
+                                // disabled={
+                                //   !checkDeliverable.cod &&
+                                //   !checkDeliverable.pre_paid
+                                // }
                               >
                                 <div
                                   className={` ${
-                                    !checkDeliverable.cod &&
-                                    !checkDeliverable.pre_paid
-                                      ? "bg-gray-400 p-3"
-                                      : "yellow-btn"
+                                  
+                                   
+                                
+                                    "yellow-btn"
                                   }`}
                                 >
                                   <span className="text-sm">Save Address</span>
